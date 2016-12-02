@@ -46,25 +46,37 @@
     return $form;
   }
 
-  function form_input_submit($form, &$form_state) {
+$alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
+echo '<pre>';
+var_dump($alpha);
+echo '</pre>';
+
+  function form_input_submit($form, &$form_state)
+  {
     $direction = $form_state['values']['shift_direction'];
     $value = $form_state['values']['shift_value'];
     $sentence = $form_state['values']['sentence'];
   }
 
-  function element_validate_sentence($element) {
+  function element_validate_sentence($element)
+  {
     $sentence_exploded = explode(" ", $element['#value']);
-    foreach ($sentence_exploded as $word) {
-      if(!ctype_alpha($word)) {
+    foreach ($sentence_exploded as $word)
+    {
+      if(!ctype_alpha($word))
+      {
         form_error($element, t('Error: Only letters are accepted.'));
       }
     }
   }
 
-  function element_validate_direction($element) {
+  function element_validate_direction($element)
+  {
     $user_direction = strtolower($element['#value']);
     $passing_directions = array('right', 'left');
-    if(!in_array($user_direction, $passing_directions)) {
+    if(!in_array($user_direction, $passing_directions))
+    {
       form_error($element, t('Error: Only right and left are accepted.'));
     }
   }
