@@ -46,18 +46,39 @@
     return $form;
   }
 
-$alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-
-echo '<pre>';
-var_dump($alpha);
-echo '</pre>';
+// LOGIC ===================================================================//
 
   function form_input_submit($form, &$form_state)
   {
+    $alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
     $direction = $form_state['values']['shift_direction'];
-    $value = $form_state['values']['shift_value'];
-    $sentence = $form_state['values']['sentence'];
+    $value = intval($form_state['values']['shift_value']);
+    $sentence = str_split(strtolower($form_state['values']['sentence']));
+
+    for($i_sentence = 0; $i_sentence < count($sentence); $i_sentence++)
+    {
+      for($i_alpha = 0; $i_alpha < count($alpha); $i_alpha++)
+      {
+
+        if($sentence[$i_sentence] == $alpha[$i_alpha] && $direction == 'right')
+        {
+          $sentence[$i_sentence] = $alpha[$i_alpha += $value];
+        }
+
+        if($sentence[$i_sentence] == $alpha[$i_alpha] && $direction == 'left')
+        {
+          $sentence[$i_sentence] = $alpha[$i_alpha - $value];
+        }
+      }
+    }
+    echo '<pre>';
+    var_dump(implode($sentence));
+    echo '</pre>';
+    exit;
   }
+
+// VALIDATION ==============================================================//
 
   function element_validate_sentence($element)
   {
