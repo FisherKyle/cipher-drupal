@@ -1,0 +1,6 @@
+name = Shift Cipher
+description = Shift Cipher Encryption.
+package = Custom Modules
+core = 7.x
+files[] = shift_cipher.module
+stylesheets[all][] = styles.css
