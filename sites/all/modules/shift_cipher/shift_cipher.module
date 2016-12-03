@@ -63,20 +63,21 @@
 
         if($sentence[$i_sentence] == $alpha[$i_alpha] && $direction == 'right')
         {
-          $sentence[$i_sentence] = $alpha[$i_alpha += $value];
+            $sentence[$i_sentence] = $alpha[($i_alpha += $value) % 26];
         }
 
         if($sentence[$i_sentence] == $alpha[$i_alpha] && $direction == 'left')
         {
-          $sentence[$i_sentence] = $alpha[$i_alpha - $value];
+          $sentence[$i_sentence] = $alpha[($i_alpha - $value) % 26];
         }
       }
     }
     echo '<pre>';
-    var_dump(implode($sentence));
-    echo '</pre>';
-    exit;
+var_dump(implode($sentence));
+echo '</pre>';
+exit;
   }
+
 
 // VALIDATION ==============================================================//
 
