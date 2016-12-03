@@ -1,104 +1,107 @@
 <?php
-  function shift_cipher_menu() {
-    $items['shift_cipher'] = array(
-      'title' => 'shift cipher',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('form_input'),
-      'access callback' => TRUE,
-      'type' => MENU_NORMAL_ITEM,
-    );
-    $items['shift_cipher_result'] = array(
-      'title' => 'cipher result',
-      'page callback' => 'result',
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
-    );
+    function shift_cipher_menu() {
+        $items['shift_cipher'] = array(
+            'title' => 'shift cipher',
+            'page callback' => 'drupal_get_form',
+            'page arguments' => array('form_input'),
+            'access callback' => TRUE,
+            'type' => MENU_NORMAL_ITEM,
+        );
+        $items['shift_cipher_result'] = array(
+            'title' => 'cipher result',
+            'page callback' => 'result',
+            'access callback' => TRUE,
+            'type' => MENU_CALLBACK,
+        );
     return $items;
-  }
+    }
 
-  function form_input() {
+    function form_input() {
 
-    $form['shift_direction'] = array(
-      '#title' => "shift direction",
-      '#type' => 'textfield',
-      '#description' => t('shift: right / left'),
-      '#element_validate' => array('element_validate_direction'),
-      '#required' => TRUE,
-    );
-    $form['shift_value'] = array(
-      '#title' => "shift value",
-      '#type' => 'textfield',
-      '#description' => t('shift: value'),
-      '#element_validate' => array('element_validate_integer_positive'),
-      '#required' => TRUE,
-    );
-    $form['sentence'] = array(
-      '#title' => "sentence to encrypt",
-      '#type' => 'textfield',
-      '#description' => t('sentence to encrypt'),
-      '#element_validate' => array('element_validate_sentence'),
-      '#required' => TRUE,
-    );
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => 'submit',
-    );
-    return $form;
-  }
+        $form['shift_direction'] = array(
+            '#title' => "shift direction",
+            '#type' => 'textfield',
+            '#description' => t('shift: right / left'),
+            '#element_validate' => array('element_validate_direction'),
+            '#required' => TRUE,
+        );
+        $form['shift_value'] = array(
+            '#title' => "shift value",
+            '#type' => 'textfield',
+            '#description' => t('shift: value'),
+            '#element_validate' => array('element_validate_integer_positive'),
+            '#required' => TRUE,
+        );
+        $form['sentence'] = array(
+            '#title' => "sentence to encrypt",
+            '#type' => 'textfield',
+            '#description' => t('sentence to encrypt'),
+            '#element_validate' => array('element_validate_sentence'),
+            '#required' => TRUE,
+        );
+        $form['submit'] = array(
+            '#type' => 'submit',
+            '#value' => 'submit',
+        );
+      return $form;
+    }
 
 // LOGIC ===================================================================//
 
-  function form_input_submit($form, &$form_state)
-  {
-    $alpha = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+    function form_input_submit($form, &$form_state){
 
-    $direction = $form_state['values']['shift_direction'];
-    $value = intval($form_state['values']['shift_value']);
-    $sentence = str_split(strtolower($form_state['values']['sentence']));
+        $direction = $form_state['values']['shift_direction'];
+        $value = intval($form_state['values']['shift_value']);
 
-    for($i_sentence = 0; $i_sentence < count($sentence); $i_sentence++)
-    {
-      for($i_alpha = 0; $i_alpha < count($alpha); $i_alpha++)
-      {
+        $sentence = str_split(strtolower($form_state['values']['sentence']));
+        $sentence_reversed = array_reverse(str_split(strtolower($form_state['values']['sentence'])));
 
-        if($sentence[$i_sentence] == $alpha[$i_alpha] && $direction == 'right')
-        {
-            $sentence[$i_sentence] = $alpha[($i_alpha += $value) % 26];
+        $alpha = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+        $alpha_reversed = ['z','y','x','w','v','u','t','s','r','q','p','o','n','m','l','k','j','i','h','g','f','e','d','c','b','a'];
+
+        for($i_sentence = 0; $i_sentence < count($sentence); $i_sentence++){
+            for($i_alpha = 0; $i_alpha < count($alpha); $i_alpha++){
+
+                if($sentence[$i_sentence] == $alpha[$i_alpha] && $direction == 'right'){
+                    $sentence[$i_sentence] = $alpha[($i_alpha += $value) % 26];
+                }
+            }
         }
 
-        if($sentence[$i_sentence] == $alpha[$i_alpha] && $direction == 'left')
-        {
-          $sentence[$i_sentence] = $alpha[($i_alpha - $value) % 26];
+        for($i_sentence = 0; $i_sentence < count($sentence_reversed); $i_sentence++){
+            for($i_alpha = 0; $i_alpha < count($alpha_reversed); $i_alpha++){
+
+                if($sentence_reversed[$i_sentence] == $alpha_reversed[$i_alpha] && $direction == 'left'){
+                    $sentence_reversed[$i_sentence] = $alpha_reversed[($i_alpha += $value) % 26];
+                }
+            }
         }
-      }
+        
+        echo '<pre>';
+        var_dump(implode($sentence));
+        var_dump(implode($sentence_reversed));
+        echo '</pre>';
+        exit;
     }
-    echo '<pre>';
-var_dump(implode($sentence));
-echo '</pre>';
-exit;
-  }
 
 
 // VALIDATION ==============================================================//
 
-  function element_validate_sentence($element)
-  {
-    $sentence_exploded = explode(" ", $element['#value']);
-    foreach ($sentence_exploded as $word)
-    {
-      if(!ctype_alpha($word))
-      {
-        form_error($element, t('Error: Only letters are accepted.'));
-      }
-    }
-  }
+    function element_validate_sentence($element){
 
-  function element_validate_direction($element)
-  {
-    $user_direction = strtolower($element['#value']);
-    $passing_directions = array('right', 'left');
-    if(!in_array($user_direction, $passing_directions))
-    {
-      form_error($element, t('Error: Only right and left are accepted.'));
+        $sentence_exploded = explode(" ", $element['#value']);
+        foreach ($sentence_exploded as $word){
+            if(!ctype_alpha($word)){
+                form_error($element, t('Error: Only letters are accepted.'));
+            }
+        }
     }
-  }
+
+    function element_validate_direction($element){
+
+        $user_direction = strtolower($element['#value']);
+        $passing_directions = array('right', 'left');
+        if(!in_array($user_direction, $passing_directions)){
+            form_error($element, t('Error: Only right and left are accepted.'));
+        }
+    }
